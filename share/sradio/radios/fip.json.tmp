@@ -1,0 +1,21 @@
+{
+  "name": "Radio France - FIP",
+  "icon": "http://image.radio-france.fr/chaines/fip/commun/img/logo2005.gif",
+
+  "stream_url": "http://mp3.live.tv-radio.com/fip/all/fiphautdebit.mp3",
+  "decoder": "mad",
+
+  "track_info_url": "http://www.radiofrance.fr/chaines/fip/endirect/popprog.php?first=0",
+  "method": "get",
+
+  "regex": {
+    "artist": "<span class=\"txt\"><b>([^<]*)</b>",
+    "artist_match_index": 1,
+
+    "title": "<span class=\"txt\"><b>[^<]*</b>([^<]*)",
+    "title_match_index": 1,
+
+    "album": "<br>album\ :([^<]*)",
+    "album_match_index": 1
+  }
+}

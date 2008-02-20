@@ -1,0 +1,71 @@
+== Author ==
+
+  Sebastian Zaha <grimdonkey@gmail.com>
+  http://sebi.tla.ro
+
+
+== Synopsis ==
+
+  Small program for playing online radio streams. It fetches information on 
+ the current song and current show from the radio's webpage and displays
+ them in a tooltip.
+
+ http://sebi.tla.ro/sradio
+
+== Install ==
+
+  As playback is done with gstreamer, and it depends on various plugin packs,
+ gem packaging would be pointless. 
+
+  Dependencies: ruby, ruby-gnome2, libgstreamer0.10-ruby1.8, libjson-ruby, 
+    gstreamer0.10-fluendo-mp3, gstreamer0.10-gnomevfs, gstreamer0.10-alsa, 
+    gstreamer0.10-plugins-bad
+
+  I know, I know.. that's a lot of dependencies. But if you don't already have
+ them installed, that's because you don't use many ruby/gnome/gstreamer apps.
+ And that's a damn shame, cause ruby, gnome and gstreamer are all wicked kewl.
+ (json too)
+
+
+  Options:
+
+  1. Install from the source package
+     - get the gzip from here: http://sebi.tla.ro/files/devel/
+     - unpack, enter directory and run 'rake install'
+
+  2. Install distribution package from repository.
+     - add repository url [1]:
+        deb http://ppa.launchpad.net/grimdonkey/ubuntu hardy main
+        deb-src http://ppa.launchpad.net/grimdonkey/ubuntu hardy main
+     - run 'apt-get install sradio'
+
+  [1] https://help.ubuntu.com/community/Repositories/Ubuntu
+
+
+== License ==
+
+  All code licenced BSD.
+
+  The installer rakefile and tasks taken from the alexandria project. MIT licensed.
+
+  The 3 icons used are shamelessly stolen from the 'dropline-neu' and 
+'nuoveXT' gnome icon packs.
+
+
+
+== Extending ==
+
+  Information on supported radios is stored in separately packaged json files.
+ 
+  If you'd like to hear a specific other station, mail me the details and I 
+ will happily add it to the package.
+
+  If you're the 'do-it-yourself' kind of guy, please check radio.json.sample 
+ for details on creating the config files. If you think you need aditional
+ config options for parsing, please mail me the details, and i'll update 
+ accordingly.
+  
+  If you think the code sucks and you want to fix it, I'll happily accept 
+ suggestions / patches.
+
+  If you... err.. you get the idea.. whatever you need.. mail me. 

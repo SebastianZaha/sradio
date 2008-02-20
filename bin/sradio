@@ -1,0 +1,21 @@
+#! /usr/bin/ruby1.8
+
+require 'sradio/config'
+require 'sradio/utils'
+require 'sradio/registry'
+require 'sradio/gui'
+require 'sradio/radio'
+require 'sradio/stream'
+
+
+class Main
+
+  class << self
+    attr_accessor :radio
+  end
+
+  Dir.mkdir(Cfg::HOME) unless File.exists?(Cfg::HOME)
+
+  Main.radio = Radio.new
+  Gui.new
+end

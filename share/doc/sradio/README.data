@@ -1,0 +1,11 @@
+== Author ==
+
+  Sebastian Zaha <grimdonkey@gmail.com>
+  http://sebi.tla.ro
+
+
+== About ==
+
+  Configuration files for sradio (http://sebi.tla.ro/sradio). Each
+  json file defines a radio station. Please check the README of sradio
+  for more information.

@@ -1,0 +1,4 @@
+[general]
+  * defer program parsing, separate thread, onplay
+
+  * a lot of error detection and recovery

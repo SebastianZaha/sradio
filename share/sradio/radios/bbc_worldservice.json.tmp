@@ -1,0 +1,23 @@
+{
+  "IMPORTANT": "This don't work with gstreamer0.10-plugins-good < 0.10.6.2 - deb testing, ubuntu 8.04",
+
+  "name": "BBC - World Service",
+  "icon": "http://www.bbc.co.uk/favicon.ico",
+
+  "stream_url": "rtsp://rmlive.bbc.co.uk/bbc-rbs/rmlive/ev7/live24/worldservice/livenews_v8.ra",
+  "decoder": "realaudiodec",
+
+  "program_info_url": "http://www.bbc.co.uk/worldservice/schedules/internet/wsradio_today.shtml",
+  "program_page_utc_offset": 0,
+
+  "regex": {
+    "program_time":        "<tr><td valign=\"top\" class=\"eleven\"><b>(\d\d:\d\d)</b>",
+    "program_time_index": 1,
+
+    "program_title":       "<tr><td valign=\"top\" class=\"eleven\"><b>\d\d:\d\d</b>([^\"]*\"){8}>([^<]*)",
+    "program_title_index": 2,
+
+    "program_description": "<tr><td valign=\"top\" class=\"eleven\"><b>\d\d:\d\d</b>([^\"]*\"){16}>([^<]*)",
+    "program_description_index": 2
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "Radio Guerilla",
+  "icon": "http://www.radioguerrilla.ro/favicon.ico",
+
+  "stream": "http://live.eliberadio.ro:8000/fm48.aac",
+  "decoder": "faad",
+
+  "track": {
+    "url": "http://www.radioguerrilla.ro/nowplaying.php?cmd=refresh",
+    "http_method": "post",
+    
+    "regexp": {
+      "artist": "id=\"nowplaying[^>]*>(<a>)?([^<-]*)",
+      "artist_match_index": 2,
+
+      "title": "id=\"nowplaying[^>]*>(<a>)?[^<-]*-([^<]*)",
+      "title_match_index": 2
+    }
+  },
+
+  "program": {
+    "url": "http://www.radioguerrilla.ro/program.php",
+    "utc_offset": 2,
+  
+    "regexp": {
+      "time": "<strong>(\d\d:\d\d)</strong>",
+      "time_match_index": 1,
+
+      "title": "<strong>\d\d:\d\d</strong>([^\"]*\"){16}>([^<]*)",
+      "title_match_index": 2,
+
+      "description": "<strong>\d\d:\d\d</strong>([^\"]*\"){16}>[^<]*</a></strong><br\ />([A-Za-z/\ -]*\d\d\.\d\d-\d\d\.\d\d,?)*([^<]*)",
+      "description_match_index": 3
+    }
+  }
+}

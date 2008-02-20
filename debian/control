@@ -1,0 +1,17 @@
+Source: sradio
+Section: sound
+Priority: optional
+Maintainer: Sebastian Zaha <grimdonkey@gmail.com> 
+Standards-Version: 3.7.2.2
+Build-Depends: ruby, rake
+
+Package: sradio
+Architecture: any
+Depends: ruby, ruby-gnome2, libgstreamer0.10-ruby1.8, libjson-ruby, gstreamer0.10-fluendo-mp3, gstreamer0.10-gnomevfs, gstreamer0.10-alsa, gstreamer0.10-plugins-bad-multiverse
+Description: Small, simple streaming radio application.
+  It consists of a systray icon, small menu for radio selection and a tooltip
+  for listing currently playing song and program information. 
+  .
+  The data is taken and parsed from each radio's webpage.
+  .
+  Homepage: http://sebi.tla.ro/sradio
