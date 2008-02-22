@@ -222,7 +222,7 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkHBox" id="hbox_song">
+	    <widget class="GtkHBox" id="hbox_track">
 	      <property name="border_width">8</property>
 	      <property name="visible">True</property>
 	      <property name="homogeneous">False</property>

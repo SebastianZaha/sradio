@@ -234,6 +234,13 @@ class SradioBuild < Rake::TaskLib
     install_file(src_dir, file, stage_dest, mode)
   end
 
+  def stage_install_file_src(file, mode)
+    dest = File.join(@debinstall.staging_dir_src, File.dirname(file))
+    FileUtils.mkdir_p dest unless test ?d, dest
+    puts "Installing #{file} to #{dest}"
+    File.install(file, dest, mode)
+  end
+
   def template_copy(src, dest, data)
     src_text = File.open(src).read()
     dest_text = src_text.gsub(/#(\w+)#/) { |match| data[$1.intern] }
@@ -252,6 +259,15 @@ class SradioBuild < Rake::TaskLib
         end
       end
 
+      task :stage_install_files_src do 
+        @debinstall.groups.each do |src, files, dest, mode|
+          files.each do |file|
+            stage_install_file_src(file, mode)
+          end
+        end
+        ['Rakefile', 'tasks.rb', 'debian/rules', 'debian/changelog', 'debian/control', 'debian/copyright'].each { |f| stage_install_file_src(f, 0644)}
+      end
+
       task :stage_install => [:pre_install, :stage_install_files] do
         stage_install_file('lib', "lib/sradio/config.rb", @debinstall.rubylib, 0644)
         puts "HACK:: installing -> 'lib', 'lib/sradio/config.rb' #{@debinstall.rubylib}"
@@ -261,12 +277,6 @@ class SradioBuild < Rake::TaskLib
         # create dir
         debian_dir = File.join(@debinstall.staging_dir, "DEBIAN")
         FileUtils.mkdir_p(debian_dir)
-
-        # copy files from debian/*
-        #files = %w{postinst postrm prerm}
-        #files.each do |file|
-        #  FileUtils.cp("debian/#{file}", File.join(debian_dir, file))
-        #end
 
         # create DEBIAN/control and debian/files
         `dpkg-gencontrol -isp`
@@ -281,8 +291,17 @@ class SradioBuild < Rake::TaskLib
         puts msg
       end
 
-      task :deb_clean do |t|
+      task :build_src => [:stage_install_files_src] do 
+        puts "Creating source stuff."
+        pwd = `pwd`
+        msg = `cd #{@debinstall.staging_dir_src} && debuild -S -sa`
+        puts msg
+        `cd #{pwd}`
+      end
+
+      task :deb_clean do
         FileUtils.rm_rf(@debinstall.staging_dir)
+        FileUtils.rm_rf(Pathname.new(@debinstall.staging_dir_src).parent.to_s)
         FileUtils.rm_rf("debian/files")
         FileUtils.rm_rf("build-stamp")
       end
@@ -303,7 +322,7 @@ class SradioBuild < Rake::TaskLib
 
   class DebianInstallConfig < InstallConfig
 
-    attr_accessor :staging_dir, :deb
+    attr_accessor :staging_dir, :staging_dir_src, :deb
 
     # Debian is peculiar about where it installs ruby libraries.
     # Its 'sitelibdir' (for ruby 1.8) is /usr/local/lib/site_ruby/1.8
@@ -324,6 +343,7 @@ class SradioBuild < Rake::TaskLib
       end
       @groups = []
       @staging_dir = nil
+      @staging_dir_src = nil
       @deb = "#{build.name}_#{build.version}_all.deb"
     end
 

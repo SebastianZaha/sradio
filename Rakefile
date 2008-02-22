@@ -11,6 +11,7 @@ build = SradioBuild.new('sradio', '0.1.0') do |b|
   b.files.icons = FileList['share/icons/**/*.png']
 
   b.debinstall.staging_dir = 'debian/tmp'
+  b.debinstall.staging_dir_src = "debian/src/sradio-#{b.version}"
 
 
 

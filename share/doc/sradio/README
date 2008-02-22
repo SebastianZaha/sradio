@@ -19,7 +19,7 @@
 
   Dependencies: ruby, ruby-gnome2, libgstreamer0.10-ruby1.8, libjson-ruby, 
     gstreamer0.10-fluendo-mp3, gstreamer0.10-gnomevfs, gstreamer0.10-alsa, 
-    gstreamer0.10-plugins-bad
+    gstreamer0.10-plugins-bad (gstreamer0.10-plugins-bad-multiverse ?)
 
   I know, I know.. that's a lot of dependencies. But if you don't already have
  them installed, that's because you don't use many ruby/gnome/gstreamer apps.
@@ -31,7 +31,7 @@
 
   1. Install from the source package
      - get the gzip from here: http://sebi.tla.ro/files/devel/
-     - unpack, enter directory and run 'rake install'
+     - unpack, enter directory and run 'rake install' (with root privileges)
 
   2. Install distribution package from repository.
      - add repository url [1]:
@@ -44,7 +44,7 @@
 
 == License ==
 
-  All code licenced BSD.
+  All code licenced MIT.
 
   The installer rakefile and tasks taken from the alexandria project. MIT licensed.
 

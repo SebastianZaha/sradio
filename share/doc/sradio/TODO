@@ -1,4 +1,4 @@
 [general]
-  * defer program parsing, separate thread, onplay
-
+  * fix wrapping and layout of the program label
   * a lot of error detection and recovery
+  * debian gstreamer plugin package for faad? fix control file accordingly. who's willing to test for me?

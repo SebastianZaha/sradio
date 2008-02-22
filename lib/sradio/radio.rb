@@ -1,10 +1,6 @@
-require 'tmpdir'
-require 'erb'
 require 'json'
 require 'net/http'
 require 'time'
-
-
 
 
 class Radio
@@ -33,7 +29,7 @@ class Radio
     stop if @playing
     @playing = station
     @player = Stream.new
-    @player.play(station.stream_url, station.decoder)    
+    @player.play(station.stream, station.decoder)
   end
 
   def stop
@@ -47,10 +43,7 @@ end
 
 
 class RadioStation
-  include ERB::Util
-
   attr_reader :name, :decoder, :stream, :icon, :track, :program
-
 
   def initialize(cfg)
     @cfg = cfg
@@ -59,6 +52,11 @@ class RadioStation
 
     @track = @cfg['track'] ? Track.new(@cfg['track']) : nil
     @program = @cfg['program'] ? Program.new(@cfg['program']) : nil 
+  end
+
+  def stop
+    @track.stop if @track
+    @program.stop if @program
   end
 end
 
@@ -73,38 +71,43 @@ class Track
     @cfg = cfg
   end
 
+  def stop
+    @artist = @title = nil
+  end
 
   def changed?
-    info = get_current_info
-    return false if info[:artist] == @artist && info[:title] == @title
-    # We have a new track
-    @artist, @title = info[:artist], info[:title]
-    get_album_and_cover
+    begin
+      info = get_current_info
+      if info[:artist] == @artist && info[:title] == @title
+        puts "\tSame track as before" if Cfg::DEBUG
+        return false
+      end
+      @artist, @title = info[:artist], info[:title]
+      get_album_and_cover
+      return true
+    rescue Exception => e
+      puts "Error parsing track " +  e.to_s + ":\n" + e.backtrace.join("\n")
+    end
   end
 
 
   private
   def get_current_info
-    uri = URI.parse(@cfg['info'])
-    case @cfg['method']
+    uri = URI.parse(@cfg['url'])
+    case @cfg['http_method']
     when 'get': str = Net::HTTP.get(uri)
     when 'post': str = Net::HTTP.post_form(uri, {}).body
     end
     str.downcase!
 
-    m = Regexp.new(@cfg['regex']['artist']).match(str)
-    new_artist = m ? m.captures[@cfg['regex']['artist_match_index']-1] : nil
-    new_artist = new_artist.beautify_as_title if new_artist 
+    m = Regexp.new(@cfg['regexp']['artist']).match(str)
+    new_artist = m ? m.captures[@cfg['regexp']['artist_match_index']-1].beautify_as_title : nil
+    m =  Regexp.new(@cfg['regexp']['title']).match(str)
+    new_title = m ? m.captures[@cfg['regexp']['title_match_index']-1].beautify_as_title : nil
+    m = @cfg['regexp']['album'] ? Regexp.new(@cfg['regexp']['album']).match(str) : nil
+    new_album = m ? m.captures[@cfg['regexp']['album_match_index']-1].beautify_as_title : nil
 
-    m =  Regexp.new(@cfg['regex']['title']).match(str)
-    new_title = m ? m.captures[@cfg['regex']['title_match_index']-1] : nil
-    new_title = new_title.beautify_as_title if new_title
-
-    m = @cfg['regex']['album'] ? Regexp.new(@cfg['regex']['album']).match(str) : nil
-    new_album = m ? m.captures[@cfg['regex']['album_match_index']-1] : nil
-    new_album = new_album.beautify_as_title if new_album
-
-    puts "\tParsed artist '#{@artist}', title '#{@title}' and album '#{@album}'" if Cfg::DEBUG
+    puts "\t#{Time.now.strftime("%H:%M:%S")} Parsed artist '#{new_artist}', title '#{new_title}' and album '#{new_album}'" if Cfg::DEBUG
     return {:artist => new_artist, :title => new_title, :album => new_album}
   end
 
@@ -113,7 +116,7 @@ class Track
     # Do we have a file in the cover_registry? return it. Also if we have an album parsed from musicbrainz, init it.
     key, @album_cover = Radio.cover_registry.get({'artist' => @artist, 'title' => @title})
     if key
-      puts "\tFound album cover url in registry: #{file}"
+      puts "\tFound album cover url in registry: #{@album_cover}"
       @album = key['album'] unless @album
       return
     end
@@ -153,43 +156,52 @@ class Program
 
   def initialize(cfg)
     @shows = []
+    @cfg = cfg
     @gmt_offset = @cfg['utc_offset']
     @day = Time.now.day
   end
 
+  def stop
+    @current_show = @next_show = nil
+  end
+
 
   def changed?
-    if Time.now.day == @day
-      return false if @current_show == get_current
-    else
-      get_current_info
+    begin
+      if !@shows.empty? && (Time.now.day == @day)
+        return false if @current_show == get_current
+      else
+        get_current_info
+      end
+      @current_show, @next_show = get_current, get_next
+      return true
+    rescue Exception => e
+      puts "Error parsing program: " + e.to_s + ":\n" + e.backtrace.join("\n")
     end
-    @current_show, @next_show = get_current, get_next
-    return true
   end
 
 
   private
   def get_current_info
-    puts "\tParsing #{@cfg['info']}"
-    page = Net::HTTP.get(URI.parse(@cfg['info']))
-    rtime = Regexp.new(@cfg['regex']['time'])
-    rtitle = Regexp.new(@cfg['regex']['title'])
-    rdesc = Regexp.new(@cfg['regex']['description'])
+    puts "\tParsing #{@cfg['url']}" if Cfg::DEBUG
+    page = Net::HTTP.get(URI.parse(@cfg['url']))
+    rtime = Regexp.new(@cfg['regexp']['time'])
+    rtitle = Regexp.new(@cfg['regexp']['title'])
+    rdesc = Regexp.new(@cfg['regexp']['description'])
     @shows = []
     loop do
       break unless m = rtime.match(page)
-      t = beautify_title(m.captures[@cfg['regex']['time_match_index'] - 1])
+      t = m.captures[@cfg['regexp']['time_match_index'] - 1].beautify_as_title
       break unless m = rtitle.match(page)
-      n = beautify_title(m.captures[@cfg['regex']['title_match_index'] - 1])
+      n = m.captures[@cfg['regexp']['title_match_index'] - 1].beautify_as_title
       break unless m = rdesc.match(page)
-      d = beautify_title(m.captures[@cfg['regex']['description_match_index'] - 1])
+      d = m.captures[@cfg['regexp']['description_match_index'] - 1].beautify_as_title
 
       puts "\t\tParsed show: t: '#{t}', n: '#{n}', d: '#{d}'"
       add_show(t, n, d)
       page = m.post_match
     end
-    raise "Cannot parse schedule" if p.shows.length == 0
+    raise "Cannot parse schedule" if @shows.length == 0
   end
 
 
@@ -201,13 +213,13 @@ class Program
 
   def get_current
     for i in 0..@shows.length
-      return @shows[i] if Time.now > @shows[i][:time] && (shows[i+1] ? Time.now < @shows[i+1][:time] : true)
+      return @shows[i] if Time.now > @shows[i][:time] && (@shows[i+1] ? Time.now < @shows[i+1][:time] : true)
     end
   end
 
   def get_next 
     for i in 0..@shows.length
-      return @shows[i+1] if Time.now > @shows[i][:time] && (shows[i+1] ? Time.now < @shows[i+1][:time] : true)
+      return @shows[i+1] if Time.now > @shows[i][:time] && (@shows[i+1] ? Time.now < @shows[i+1][:time] : true)
     end
   end
 end

@@ -1,4 +1,8 @@
+require 'erb'
+
 class String
+  include ERB::Util
+
   def beautify_as_title
     h(strip.downcase.split.collect {|p| p.capitalize}.join("\ "))
   end
