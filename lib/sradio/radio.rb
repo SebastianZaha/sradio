@@ -72,7 +72,7 @@ class Track
   end
 
   def stop
-    @artist = @title = nil
+    @artist = @title = @album = @album_cover = nil
   end
 
   def changed?
@@ -82,7 +82,7 @@ class Track
         puts "\tSame track as before" if Cfg::DEBUG
         return false
       end
-      @artist, @title = info[:artist], info[:title]
+      @artist, @title, @album = info[:artist], info[:title], info[:album]
       get_album_and_cover
       return true
     rescue Exception => e
@@ -127,7 +127,7 @@ class Track
         Regexp.new("<td>(100|9.)</td>([^\"]*\"){8}>.:..</td><td>compilation</td>([^\"]*\"){3}([^\"]*)\">([^<]*)").match(search)
 
     puts "\tCan't find album on musicbrainz" if !m && Cfg::DEBUG
-    return nil unless m
+    return unless m
     puts "\tFound album on musicbranz: http://musicbrainz.org#{m.captures[3]}" if Cfg::DEBUG
 
     @album = m.captures[4] unless @album
@@ -168,7 +168,7 @@ class Program
 
   def changed?
     begin
-      if !@shows.empty? && (Time.now.day == @day)
+      if !@shows.empty? && get_next && (Time.now.day == @day)
         return false if @current_show == get_current
       else
         get_current_info
@@ -187,17 +187,18 @@ class Program
     page = Net::HTTP.get(URI.parse(@cfg['url']))
     rtime = Regexp.new(@cfg['regexp']['time'])
     rtitle = Regexp.new(@cfg['regexp']['title'])
-    rdesc = Regexp.new(@cfg['regexp']['description'])
+    rdesc = Regexp.new(@cfg['regexp']['description']) if @cfg['regexp']['description']
     @shows = []
     loop do
       break unless m = rtime.match(page)
       t = m.captures[@cfg['regexp']['time_match_index'] - 1].beautify_as_title
       break unless m = rtitle.match(page)
       n = m.captures[@cfg['regexp']['title_match_index'] - 1].beautify_as_title
-      break unless m = rdesc.match(page)
-      d = m.captures[@cfg['regexp']['description_match_index'] - 1].beautify_as_title
+      
+      m = rdesc.match(page) if rdesc
+      d = m.captures[@cfg['regexp']['description_match_index'] - 1].beautify if rdesc
 
-      puts "\t\tParsed show: t: '#{t}', n: '#{n}', d: '#{d}'"
+      puts "\t\tParsed show: t: '#{t}', n: '#{n}', d: '#{d}'" if Cfg::DEBUG
       add_show(t, n, d)
       page = m.post_match
     end

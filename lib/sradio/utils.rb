@@ -1,10 +1,15 @@
 require 'erb'
+require 'kconv'
 
 class String
   include ERB::Util
 
+  def beautify
+    Kconv.toutf8(strip)
+  end
+
   def beautify_as_title
-    h(strip.downcase.split.collect {|p| p.capitalize}.join("\ "))
+    beautify.downcase.split.collect {|p| p.capitalize}.join("\ ")
   end
 end
 

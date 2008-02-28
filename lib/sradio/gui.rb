@@ -4,11 +4,7 @@ require 'libglade2'
 class Gui
   def initialize
     @g = GladeXML.new("#{Cfg::DATA}/glade/tooltip.glade", nil, nil)
-    @tooltip = @g['win_tooltip']
-    @tooltip.extend(SradioTooltip)
-    @tooltip.visible = false
-    @tooltip.g = @g
-    @tooltip.defaults
+    @tooltip = Tooltip.new(@g)
 
     init_status_icon
     init_menu
@@ -71,7 +67,9 @@ class Gui
   end
 
   def play(station)
+    stop if Main.radio.playing
     Main.radio.play(station)
+
     @tooltip.populate(station)
     if station.track
       @tooltip.refresh_track
@@ -84,8 +82,8 @@ class Gui
   end
 
   def stop
-    Gtk.timeout_remove(@timeout_track)
-    Gtk.timeout_remove(@timeout_program)
+    Gtk.timeout_remove(@timeout_track) if @timeout_track
+    Gtk.timeout_remove(@timeout_program) if @timeout_program
     @tooltip.defaults
     Main.radio.stop
   end
@@ -93,11 +91,17 @@ end
 
 
 
-module SradioTooltip
+class Tooltip
   attr_accessor :g
   
+  def initialize(g)
+    @g = g
+    @g['win_tooltip'].visible = false
+    defaults
+  end
+  
   def toggle
-    self.visible = !self.visible?
+    @g['win_tooltip'].visible = !@g['win_tooltip'].visible?
   end
   
   def show_track; @g['hbox_track'].show; end
@@ -150,28 +154,39 @@ module SradioTooltip
   end
   
   def refresh_track
-    doIt = Proc.new {
-      @station.track.artist ? @g['lbl_artist'].set_markup("<b>#{@station.track.artist}</b>") : @g['lbl_artist'].text = 'Not Available'
-      @station.track.title ? @g['lbl_title'].set_markup("<b>#{@station.track.title}</b>") : @g['lbl_title'].text = 'Not Available'
-      @station.track.album ? @g['lbl_album'].set_markup("<b>#{@station.track.album}</b>") : @g['lbl_album'].text = 'Not Available'
-      @station.track.album_cover ? show_album_cover(@station.track.album_cover) : hide_album_cover
-    }
     # changed? will parse data retrieved from the web so we need to break exec from the gui thread to avoid freeze-up
-    Thread.new { doIt.call if @station.track.changed? }
+    Thread.new do
+      begin
+        if @station.track.changed?
+          @station.track.artist ? @g['lbl_artist'].set_markup("<b>#{@station.track.artist}</b>") : @g['lbl_artist'].text = 'Not Available'
+          @station.track.title ? @g['lbl_title'].set_markup("<b>#{@station.track.title}</b>") : @g['lbl_title'].text = 'Not Available'
+          @station.track.album ? @g['lbl_album'].set_markup("<b>#{@station.track.album}</b>") : @g['lbl_album'].text = 'Not Available'
+          @station.track.album_cover ? show_album_cover(@station.track.album_cover) : hide_album_cover
+        end
+      rescue Exception => e
+        puts "Exc: " + e.to_s
+      end
+    end
   end
 
   def refresh_program
-    doIt = Proc.new {
-      c = @station.program.current_show
-      @g['lbl_program_current'].set_markup("<b>#{c[:time].strftime("%H:%M")}</b>  #{c[:name]}")
-      @g['lbl_program_current_desc'].set_markup("  #{c[:description]}")
-      if n = @station.program.next_show
-        @g['lbl_program_next'].set_markup("<b>#{n[:time].strftime("%H:%M")}</b>  #{n[:name]}")
-        @g['lbl_program_next_desc'].set_markup("  #{n[:description]}")
-      else
-        @g['lbl_program_next'].visible = @g['lbl_program_next_desc'].visible = false
-      end
-    }
-    Thread.new { doIt.call if @station.program.changed? }
-  end
-end
+    Thread.new do 
+      begin
+        if @station.program.changed?
+          c = @station.program.current_show
+          @g['lbl_program_current'].set_markup("<b>#{c[:time].strftime("%H:%M")}</b>  #{c[:name]}")
+          @g['lbl_program_current_desc'].set_markup("  #{c[:description]}")
+          if n = @station.program.next_show
+            @g['lbl_program_next'].visible = @g['lbl_program_next_desc'].visible = true
+            @g['lbl_program_next'].set_markup("<b>#{n[:time].strftime("%H:%M")}</b>  #{n[:name]}")
+            @g['lbl_program_next_desc'].text = "  #{n[:description]}"
+          else
+            @g['lbl_program_next'].visible = @g['lbl_program_next_desc'].visible = false
+          end # if n =
+        end # if @station
+      rescue Exception => e
+        puts "Exc: " + e.to_s
+      end # begin
+    end # thread
+  end # def refresh_program
+end # class Tooltip

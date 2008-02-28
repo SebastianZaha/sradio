@@ -1,14 +1,22 @@
 {
+  "#": "This will be displayed in the tooltip and menu.",
   "name": "Radio Guerilla",
+
+  "#": "Used in same places as the name. Provide any size, it will be scaled to 22x22.",
   "icon": "http://www.radioguerrilla.ro/favicon.ico",
 
   "stream": "http://live.eliberadio.ro:8000/fm48.aac",
+
+  "#": "Name of the gstreamer decoder for this stream, see here: http://gstreamer.freedesktop.org/documentation/plugins.html",
   "decoder": "faad",
 
   "track": {
+
+    "#": "Url for the page where you can find information on currently playing track.",
     "url": "http://www.radioguerrilla.ro/nowplaying.php?cmd=refresh",
     "http_method": "post",
-    
+
+    "#": "Regexp for identifying the strings for artist and title. Capitalization corrected in the code. You should provide regex that match independently of each other",
     "regexp": {
       "artist": "id=\"nowplaying[^>]*>(<a>)?([^<-]*)",
       "artist_match_index": 2,
@@ -19,9 +27,13 @@
   },
 
   "program": {
+    "#": "Url for the page where you can find information on the radio's current schedule (today's programs)",
     "url": "http://www.radioguerrilla.ro/program.php",
+
+    "#": "Representing the timezone offset for the times listed on the page. In this case it's GMT+2 (Romania)",
     "utc_offset": 2,
-  
+
+    "#": "Regexp for identifying the schedule. It is repeatedly applied on the page, until it doesn't match anymore.",
     "regexp": {
       "time": "<strong>(\d\d:\d\d)</strong>",
       "time_match_index": 1,

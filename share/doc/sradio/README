@@ -35,8 +35,8 @@
 
   2. Install distribution package from repository.
      - add repository url [1]:
-        deb http://ppa.launchpad.net/grimdonkey/ubuntu hardy main
-        deb-src http://ppa.launchpad.net/grimdonkey/ubuntu hardy main
+        deb http://ppa.launchpad.net/grimdonkey/ubuntu gutsy main
+        deb-src http://ppa.launchpad.net/grimdonkey/ubuntu gutsy main
      - run 'apt-get install sradio'
 
   [1] https://help.ubuntu.com/community/Repositories/Ubuntu
@@ -55,12 +55,13 @@
 
 == Extending ==
 
-  Information on supported radios is stored in separately packaged json files.
+  Information on supported radios is stored in json files 
+ (/usr/share/sradio/radios).
  
   If you'd like to hear a specific other station, mail me the details and I 
  will happily add it to the package.
 
-  If you're the 'do-it-yourself' kind of guy, please check radio.json.sample 
+  If you're the 'do-it-yourself' kind of guy, please check guerilla.json 
  for details on creating the config files. If you think you need aditional
  config options for parsing, please mail me the details, and i'll update 
  accordingly.

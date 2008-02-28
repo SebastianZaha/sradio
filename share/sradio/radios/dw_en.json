@@ -1,0 +1,24 @@
+{
+  "name": "Deutsche Welle (English)",
+
+  "icon": "http://www.dw-world.de/favicon.ico",
+
+  "stream": "http://gffstream.ic.llnwd.net/stream/gffstream_gffstream4",
+  "decoder": "mad",
+
+  "program": {
+    "url": "http://www.dw-world.de/dw/0,2142,9101,00.html",
+    "utc_offset": 0,
+
+    "regexp": {
+      "time": "ProgramSummaryTime\"([^\"]*\"){2}>(\d\d:\d\d)",
+      "time_match_index": 2,
+
+      "title": "ProgrammSummaryTheme\"([^\"]*\"){4}>([^-<]*)",
+      "title_match_index": 2,
+
+      "description": "ProgrammSummaryTheme\"([^\"]*\"){4}>([a-zA-Z\ ]*-)?([^<]*)",
+      "description_match_index": 3,
+    }
+  }
+}
