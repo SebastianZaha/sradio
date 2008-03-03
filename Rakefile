@@ -1,6 +1,6 @@
 require './tasks.rb'
 
-build = SradioBuild.new('sradio', '0.1.0') do |b|
+build = SradioBuild.new('sradio', '0.1.1') do |b|
 
   b.author = 'Sebastian Zaha'
   b.email  = 'grimdonkey@gmail.com'

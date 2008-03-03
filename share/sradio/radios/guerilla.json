@@ -41,7 +41,7 @@
       "title": "<strong>\d\d:\d\d</strong>([^\"]*\"){16}>([^<]*)",
       "title_match_index": 2,
 
-      "description": "<strong>\d\d:\d\d</strong>([^\"]*\"){16}>[^<]*</a></strong><br\ />([A-Za-z/\ -]*\d\d\.\d\d-\d\d\.\d\d,?)*([^<]*)",
+      "description": "<strong>\d\d:\d\d</strong>([^\"]*\"){16}>[^<]*</a></strong><br\ />\s*([A-Za-z/\ -]*\d\d.\d\d-\d\d.\d\d,?)*([^<]*)",
       "description_match_index": 3
     }
   }
