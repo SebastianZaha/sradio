@@ -1,4 +1,3 @@
-  * deb package from ppa - sradio.desktop - icon in menu borked?
+  * escape special characters for markup - & -> &amp; etc
   * debian gstreamer plugin package for faad? fix control file accordingly. who's willing to test for me?
-  ! dependecy listing in: debian/control, README, site
   * a lot of error detection and recovery

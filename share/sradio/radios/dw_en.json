@@ -11,14 +11,14 @@
     "utc_offset": 0,
 
     "regexp": {
-      "time": "ProgramSummaryTime\"([^\"]*\"){2}>(\d\d:\d\d)",
+      "time": "ProgramSummaryTime\"([^\"]*\"){2}>(\\d\\d:\\d\\d)",
       "time_match_index": 2,
 
       "title": "ProgrammSummaryTheme\"([^\"]*\"){4}>([^-<]*)",
       "title_match_index": 2,
 
       "description": "ProgrammSummaryTheme\"([^\"]*\"){4}>([a-zA-Z\ ]*-)?([^<]*)",
-      "description_match_index": 3,
+      "description_match_index": 3
     }
   }
 }

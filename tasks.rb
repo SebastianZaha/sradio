@@ -143,7 +143,7 @@ class SradioBuild < Rake::TaskLib
     dest = source_path ? dest_basedir + source_path : dest_basedir
     FileUtils.mkdir_p dest unless test ?d, dest
     puts "Installing #{file} to #{dest}"
-    File.install(file.to_s, dest.to_s, mode)
+    FileUtils.install(file.to_s, dest.to_s, :mode => mode)
   end
 
   def define_install_tasks
@@ -266,6 +266,7 @@ class SradioBuild < Rake::TaskLib
           end
         end
         ['Rakefile', 'tasks.rb', 'debian/rules', 'debian/changelog', 'debian/control', 'debian/copyright'].each { |f| stage_install_file_src(f, 0644)}
+        ['debian/postinst'].each { |f| stage_install_file_src(f, 0755)}
       end
 
       task :stage_install => [:pre_install, :stage_install_files] do
@@ -277,6 +278,11 @@ class SradioBuild < Rake::TaskLib
         # create dir
         debian_dir = File.join(@debinstall.staging_dir, "DEBIAN")
         FileUtils.mkdir_p(debian_dir)
+
+        files = %w{postinst}
+        files.each do |file|
+          FileUtils.cp("debian/#{file}", File.join(debian_dir, file))
+        end
 
         # create DEBIAN/control and debian/files
         `dpkg-gencontrol -isp`

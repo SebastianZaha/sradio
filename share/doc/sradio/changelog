@@ -1,3 +1,26 @@
+sradio (0.1.2-3) hardy; urgency=low
+  
+  * Fix guerilla, dw config.
+  * Fix File.install to FileUtils.install rake 0.8 issue)
+  * Packaging (gstreamer shit)
+
+ -- Sebastian Zaha <grimdonkey@gmail.com>  Sat, 10 May 2008 17:41:37 +0300
+
+
+sradio (0.1.1-3) gutsy; urgency=low
+
+  * Packaging (correct post-install script permissions)
+
+ -- Sebastian Zaha <grimdonkey@gmail.com>  Mon, 03 Mar 2008 18:19:25 +0200
+
+
+sradio (0.1.1-2) gutsy; urgency=low
+
+  * Packaging (post-install script for updating gtk icon cache)
+
+ -- Sebastian Zaha <grimdonkey@gmail.com>  Mon, 03 Mar 2008 17:51:55 +0200
+
+
 sradio (0.1.1-1) gutsy; urgency=low
 
   * Bugfixes, code structure, packaging

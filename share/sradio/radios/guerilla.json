@@ -5,7 +5,7 @@
   "#": "Used in same places as the name. Provide any size, it will be scaled to 22x22.",
   "icon": "http://www.radioguerrilla.ro/favicon.ico",
 
-  "stream": "http://live.eliberadio.ro:8000/fm48.aac",
+  "stream": "http://live.eliberadio.ro:8002",
 
   "#": "Name of the gstreamer decoder for this stream, see here: http://gstreamer.freedesktop.org/documentation/plugins.html",
   "decoder": "faad",
@@ -35,13 +35,13 @@
 
     "#": "Regexp for identifying the schedule. It is repeatedly applied on the page, until it doesn't match anymore.",
     "regexp": {
-      "time": "<strong>(\d\d:\d\d)</strong>",
+      "time": "<strong>(\\d\\d:\\d\\d)</strong>",
       "time_match_index": 1,
 
-      "title": "<strong>\d\d:\d\d</strong>([^\"]*\"){16}>([^<]*)",
+      "title": "<strong>\\d\\d:\\d\\d</strong>([^\"]*\"){16}>([^<]*)",
       "title_match_index": 2,
 
-      "description": "<strong>\d\d:\d\d</strong>([^\"]*\"){16}>[^<]*</a></strong><br\ />\s*([A-Za-z/\ -]*\d\d.\d\d-\d\d.\d\d,?)*([^<]*)",
+      "description": "<strong>\\d\\d:\\d\\d</strong>([^\"]*\"){16}>[^<]*</a></strong><br\ />\\s*([A-Za-z/\ -]*\\d\\d.\\d\\d-\\d\\d.\\d\\d,?)*([^<]*)",
       "description_match_index": 3
     }
   }

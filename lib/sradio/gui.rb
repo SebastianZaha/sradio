@@ -164,7 +164,7 @@ class Tooltip
           @station.track.album_cover ? show_album_cover(@station.track.album_cover) : hide_album_cover
         end
       rescue Exception => e
-        puts "Exc: " + e.to_s
+        puts "Exception: " + e.to_s
       end
     end
   end
@@ -185,7 +185,7 @@ class Tooltip
           end # if n =
         end # if @station
       rescue Exception => e
-        puts "Exc: " + e.to_s
+        puts "Exception: " + e.to_s
       end # begin
     end # thread
   end # def refresh_program

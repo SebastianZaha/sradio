@@ -45,3 +45,9 @@ task :build => [:autogen]
 task :default => [:build]
 
 task :pre_install => [:build]
+
+task :update_icon_cache do
+  system("gtk-update-icon-cache -f -t /usr/share/icons/hicolor") # HACK
+end
+
+task :post_install => [:update_icon_cache]

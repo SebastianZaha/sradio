@@ -19,7 +19,7 @@ class Radio
       begin
         cfg = JSON.parse(File.read("#{Cfg::DATA}/radios/#{file}"))
         @stations << RadioStation.new(cfg)
-      rescue JSON::ParserError
+      rescue JSON::ParserError => e
         puts "\tFailed to parse '#{file}'. JSON syntax error."
       end
     end
@@ -213,14 +213,16 @@ class Program
 
 
   def get_current
-    for i in 0..@shows.length
+    @shows.each_index do |i|
       return @shows[i] if Time.now > @shows[i][:time] && (@shows[i+1] ? Time.now < @shows[i+1][:time] : true)
     end
+    return nil
   end
 
   def get_next 
-    for i in 0..@shows.length
+    @shows.each_index do |i|
       return @shows[i+1] if Time.now > @shows[i][:time] && (@shows[i+1] ? Time.now < @shows[i+1][:time] : true)
     end
+    return nil
   end
 end
